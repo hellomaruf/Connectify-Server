@@ -101,7 +101,24 @@ app.patch("/updateContact/:id", async (req, res) => {
     } else {
       res.status(404).send({ message: "contact was not update with this id" });
     }
-  } catch (error) {}
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+});
+
+// Delete contact
+app.delete("/deleteContact/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const deleteContact = await Contact.deleteOne({ _id: id });
+    if (deleteContact) {
+      res.status(200).send(deleteContact);
+    } else {
+      res.status(404).send({ message: "contact was not delete with this id" });
+    }
+  } catch (error) {
+    res.send({ message: error.message });
+  }
 });
 
 app.get("/", (req, res) => {
