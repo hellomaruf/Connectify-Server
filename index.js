@@ -28,10 +28,10 @@ const contactSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
-  //   photo: {
-  //     type: String,
-  //     require: true,
-  //   },
+  photo: {
+    type: String,
+    require: true,
+  },
 });
 
 // Create contact model
@@ -56,7 +56,7 @@ app.post("/contacts", async (req, res) => {
       email: req.body.email,
       phone_num: req.body.phone_num,
       address: req.body.address,
-      //   photo: req.body.photo,
+      photo: req.body.photo,
     });
     const contactData = await newContact.save();
     res.send(contactData);
@@ -77,6 +77,31 @@ app.get("/contacts", async (req, res) => {
   } catch (error) {
     res.status(500).send({ message: error.message });
   }
+});
+
+// Update contact Data
+app.patch("/updateContact/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const contact = req.body;
+    const updatedContact = await Contact.updateOne(
+      { _id: id },
+      {
+        $set: {
+          name: contact.name,
+          email: contact.email,
+          phone_num: contact.phone_num,
+          address: contact.address,
+          photo: contact.photo,
+        },
+      }
+    );
+    if (updatedContact) {
+      res.status(200).send(updatedContact);
+    } else {
+      res.status(404).send({ message: "contact was not update with this id" });
+    }
+  } catch (error) {}
 });
 
 app.get("/", (req, res) => {
