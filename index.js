@@ -5,12 +5,12 @@ const app = express();
 const mongoose = require("mongoose");
 const port = process.env.PORT || 3000;
 
-// middleware
+// middleware-------->
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Create contact Schema
+// Create contact Schema----------->
 const contactSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -32,12 +32,17 @@ const contactSchema = new mongoose.Schema({
     type: String,
     require: true,
   },
+  status: {
+    type: String,
+    require: true,
+  },
 });
 
-// Create contact model
+
+// Create contact model--------->
 const Contact = mongoose.model("contacts", contactSchema);
 
-// Connect to Mongodb
+// Connect to Mongodb---------->
 mongoose
   .connect(
     "mongodb://connectifyDB:0wL7LjhKdyU7o22z@ac-tuztplb-shard-00-00.0o9qayn.mongodb.net:27017,ac-tuztplb-shard-00-01.0o9qayn.mongodb.net:27017,ac-tuztplb-shard-00-02.0o9qayn.mongodb.net:27017/?ssl=true&replicaSet=atlas-z73jlu-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0"
@@ -48,7 +53,7 @@ mongoose
     console.log(error);
   });
 
-// Create contact data
+// Create contact data---------->
 app.post("/contacts", async (req, res) => {
   try {
     const newContact = new Contact({
@@ -65,7 +70,7 @@ app.post("/contacts", async (req, res) => {
   }
 });
 
-// Find contact data
+// Find contact data--------->
 app.get("/contacts", async (req, res) => {
   try {
     const contacts = await Contact.find();
@@ -79,7 +84,7 @@ app.get("/contacts", async (req, res) => {
   }
 });
 
-// Update contact Data
+// Update contact Data------------>
 app.patch("/updateContact/:id", async (req, res) => {
   try {
     const id = req.params.id;
@@ -98,6 +103,28 @@ app.patch("/updateContact/:id", async (req, res) => {
     );
     if (updatedContact) {
       res.status(200).send(updatedContact);
+    } else {
+      res.status(404).send({ message: "contact was not update with this id" });
+    }
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+});
+
+// add favourite contact Data----------->
+app.patch("/favouriteContact/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    const favouriteContact = await Contact.updateOne(
+      { _id: id },
+      {
+        $set: {
+          status: "favourite",
+        },
+      }
+    );
+    if (updatedContact) {
+      res.status(200).send(favouriteContact);
     } else {
       res.status(404).send({ message: "contact was not update with this id" });
     }
