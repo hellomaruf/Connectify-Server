@@ -8,7 +8,15 @@ const port = process.env.PORT || 3000;
 // middleware-------->
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://connectify-3764e.web.app",
+      "http://localhost:5173",
+      "https://connectify-3764e.firebaseapp.com",
+    ],
+  })
+);
 
 // Create contact Schema----------->
 const contactSchema = new mongoose.Schema({
