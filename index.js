@@ -38,14 +38,13 @@ const contactSchema = new mongoose.Schema({
   },
 });
 
-
 // Create contact model--------->
 const Contact = mongoose.model("contacts", contactSchema);
 
 // Connect to Mongodb---------->
 mongoose
   .connect(
-    "mongodb://connectifyDB:0wL7LjhKdyU7o22z@ac-tuztplb-shard-00-00.0o9qayn.mongodb.net:27017,ac-tuztplb-shard-00-01.0o9qayn.mongodb.net:27017,ac-tuztplb-shard-00-02.0o9qayn.mongodb.net:27017/?ssl=true&replicaSet=atlas-z73jlu-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0"
+    `mongodb://${process.env.USER}:${process.env.PASS}@ac-tuztplb-shard-00-00.0o9qayn.mongodb.net:27017,ac-tuztplb-shard-00-01.0o9qayn.mongodb.net:27017,ac-tuztplb-shard-00-02.0o9qayn.mongodb.net:27017/?ssl=true&replicaSet=atlas-z73jlu-shard-0&authSource=admin&retryWrites=true&w=majority&appName=Cluster0`
   )
   .then(() => console.log("DB is Connected"))
   .catch((error) => {
@@ -133,7 +132,22 @@ app.patch("/favouriteContact/:id", async (req, res) => {
   }
 });
 
-// Delete contact
+// get favourite contacts---------->
+app.get("/favouriteContacts/:status", async (req, res) => {
+  try {
+    const status = req.params.status;
+    const favouriteContact = await Contact.find({ status });
+    if (favouriteContact) {
+      res.status(200).send(favouriteContact);
+    } else {
+      res.status(404).send({ message: "contact was not favourite" });
+    }
+  } catch (error) {
+    res.send({ message: error.message });
+  }
+});
+
+// Delete contact------------>
 app.delete("/deleteContact/:id", async (req, res) => {
   try {
     const id = req.params.id;
